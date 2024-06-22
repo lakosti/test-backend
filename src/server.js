@@ -1,8 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
+import dotevn from 'dotenv';
 
 import movies from './db/movies.js';
+
+//? як додати локально дані на комп у process.env -- встановлюємо пакет npm i dotenv
+dotevn.config(); //? дивиться чи є файл .env і читає його
+
+const { PORT = 3000 } = process.env;
+console.log(PORT);
+// console.log(process.env); //* змінні оточення (налаштування компютера на якому запускаєтсья код) //на гіт не пушиться, віддалено потрібно самому писати (це різні паролі, логіни)
 
 const startServer = () => {
   const app = express();
@@ -28,7 +36,7 @@ const startServer = () => {
     });
   });
 
-  app.listen(3000, () => console.log('Server running on 3000'));
+  app.listen(PORT, () => console.log(`Server running on ${PORT}`));
 };
 
 export default startServer;
