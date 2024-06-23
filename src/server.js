@@ -5,7 +5,7 @@ import pino from 'pino-http';
 // //? як додати локально дані на комп у process.env -- встановлюємо пакет npm i dotenv
 // dotevn.config(); //? дивиться чи є файл .env і читає його
 
-import movies from './db/movies.js';
+// import movies from './db/movies.js';
 import env from './utils/env.js';
 
 const port = env('PORT', 3000);
@@ -24,7 +24,7 @@ const startServer = () => {
   app.use(cors());
 
   app.get('/api/movies', (req, res) => {
-    res.json(movies);
+    // res.json(movies);
   });
 
   //?адреса якої не існує
