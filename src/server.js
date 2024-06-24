@@ -8,9 +8,9 @@ import pino from 'pino-http';
 // import movies from './db/movies.js';
 import env from './utils/env.js';
 
-import Movie from './db/models/Movie.js';
+import { getMovies } from './services/movies-services.js';
 
-const port = env('PORT', 3000);
+const port = env('PORT', '3000');
 
 const startServer = () => {
   const app = express();
@@ -27,7 +27,7 @@ const startServer = () => {
 
   app.get('/api/movies', async (req, res) => {
     //*у mongoose метод find який знаходить все(якщо нічого не вказано) або щось одне
-    const result = await Movie.find(); //! запит до бази
+    const result = await getMovies(); //! запит до бази
 
     res.json(result); //! відправляємо відповідь на фронтенд
   });
