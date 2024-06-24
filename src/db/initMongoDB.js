@@ -3,7 +3,7 @@
 import mongoose from 'mongoose';
 import env from '../utils/env.js';
 
-const initMongoDB = async () => {
+const initMongo = async () => {
   //? пишемо обов'язково пароль і назву бази до якої доєднуємося
   try {
     const user = env('MONGODB_USER');
@@ -27,4 +27,4 @@ mongoose.connection.on('error', (err) => {
   console.error(`Failed to connect to MongoDB: ${err.message}`);
 });
 
-export default initMongoDB;
+export default initMongo;
