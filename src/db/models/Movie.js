@@ -19,7 +19,9 @@ const movieSchema = new Schema({
 });
 
 //? модель яка буде взаємодіяти з цією колекцією
+
 const Movie = model('movie', movieSchema);
+
 //?пишемо назву колекції в однині (movie), mongoose її перетворить на множину
 //mouse - mice
 

@@ -11,7 +11,7 @@ const initMongoDB = async () => {
     const databaseUrl = env('MONGODB_URL');
     const databaseName = env('MONGODB_NAME');
 
-    const DB_HOST = `mongodb+srv://${user}:${password}@${databaseUrl}/${databaseName}?retryWrites=true&w=majority`;
+    const DB_HOST = `mongodb+srv://${user}:${password}@${databaseUrl}/${databaseName}?retryWrites=true&w=majority&appName=Cluster0`;
     await mongoose.connect(DB_HOST);
     console.log('Database connection success');
   } catch (error) {
