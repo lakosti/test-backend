@@ -8,6 +8,8 @@ import pino from 'pino-http';
 // import movies from './db/movies.js';
 import env from './utils/env.js';
 
+import Movie from './db/models/Movie.js';
+
 const port = env('PORT', 3000);
 
 const startServer = () => {
@@ -23,8 +25,11 @@ const startServer = () => {
   app.use(logger); //*мідлваре pino
   app.use(cors());
 
-  app.get('/api/movies', (req, res) => {
-    // res.json(movies);
+  app.get('/api/movies', async (req, res) => {
+    //*у mongoose метод find який знаходить все(якщо нічого не вказано) або щось одне
+    const result = await Movie.find(); //! запит до бази
+
+    res.json(result); //! відправляємо відповідь на фронтенд
   });
 
   //?адреса якої не існує
