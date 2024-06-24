@@ -11,7 +11,7 @@ const initMongoDB = async () => {
     const databaseUrl = env('MONGODB_URL');
     const databaseName = env('MONGODB_NAME');
 
-    const DB_HOST = `mongodb+srv://${user}:${password}@${databaseUrl}/${databaseName}?retryWrites=true&w=majority&appName=Cluster0`;
+    const DB_HOST = `mongodb+srv://${user}:${password}@${databaseUrl}/${databaseName}?retryWrites=true&w=majority`;
     await mongoose.connect(DB_HOST);
     console.log('Database connection success');
   } catch (error) {
@@ -19,5 +19,12 @@ const initMongoDB = async () => {
     throw error;
   }
 };
+mongoose.connection.on('connected', () => {
+  console.log('Connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error(`Failed to connect to MongoDB: ${err.message}`);
+});
 
 export default initMongoDB;
