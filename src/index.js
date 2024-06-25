@@ -2,8 +2,7 @@
 // const validationResult = releaseYearRegexp.test('200');
 // console.log(validationResult); // це як валідатор - повертає тру/ фолс
 
-// import initMongoDB from './db/initMongoDB.js';
-import initMongo from './db/initMongoDB.js';
+import initMongo from './db/initMongoDBconection.js';
 import startServer from './server.js';
 
 const bootstrap = async () => {
