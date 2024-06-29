@@ -8,6 +8,7 @@ import pino from 'pino-http';
 import env from './utils/env.js';
 import moviesRouter from './routers/movies-router.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 const port = env('PORT', '3000');
 
@@ -21,6 +22,8 @@ const startServer = () => {
     },
   });
 
+  //! middlewares
+
   app.use(logger); //*мідлваре pino
   app.use(cors());
 
@@ -30,6 +33,7 @@ const startServer = () => {
 
   //? якщо нічого не знайдено, помилка 404
   app.use(notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(port, () => console.log(`Server running on ${port}`));
 };
