@@ -26,6 +26,7 @@ const startServer = () => {
 
   app.use(logger); //*мідлваре pino
   app.use(cors());
+  app.use(express.json()); //*при post запиті зчитує тіло запиту(req.body) і перетворює з бінарного формату на звичайний json / [] і записує в req.body (шукає Content-Type) працює лише із json форматом
 
   //? будь який запит який іде на /api/movies потрібно шукати в moviesRouter
   // приставка api вказує на те шо повертаються якісь дані а не просто розмітка

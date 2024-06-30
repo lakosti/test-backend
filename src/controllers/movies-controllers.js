@@ -1,8 +1,15 @@
 //* контролер - це запит до бази і відповідь з неї, яку ми передаємо на фронтенд -- ТЕ ЩО ВІДПРАВЛЯЄМО НА ФРОНТ
 
-import { getMovieById, getMovies } from '../services/movies-services.js';
+import {
+  addMovie,
+  deleteMovie,
+  getMovieById,
+  getMovies,
+  upsertMovie,
+} from '../services/movies-services.js';
 import createHttpError from 'http-errors';
 
+//GET
 export const getAllMoviesController = async (req, res) => {
   //у mongoose метод find який знаходить все(якщо нічого не вказано) або щось одне
 
@@ -22,7 +29,7 @@ export const getAllMoviesController = async (req, res) => {
   //   // });
   // }
 };
-
+//GET/:id
 export const getMovieByIdController = async (req, res) => {
   //? :id - це як змінна
   // console.log(req.params); // {id: refreferferfre} - айді можемо витягнути так
@@ -46,4 +53,68 @@ export const getMovieByIdController = async (req, res) => {
   // } catch (error) {
   //   next(error);
   // }
+};
+
+//POST
+export const addMovieController = async (req, res) => {
+  //*тіло запиту збергіється в req.body
+  // console.log(req.body);
+
+  const data = await addMovie(req.body);
+
+  res.status(201).json({
+    status: 201,
+    data,
+    message: 'Success add movie',
+  });
+};
+
+// PUT/:id
+
+export const updateMovieController = async (req, res) => {
+  const { id } = req.params;
+
+  const data = await upsertMovie({ _id: id }, req.body, { upsert: true }); // upsert: true -- якщо немає такого об'єкту то додає
+
+  const status = data.isNew ? 201 : 200;
+  const message = data.isNew ? 'Success create movie' : 'Success update movie';
+
+  res.json({
+    status,
+    data: data.value,
+    message,
+  });
+};
+
+// PATCH/:id
+
+export const patchMovieController = async (req, res) => {
+  const { id } = req.params;
+  const result = await upsertMovie({ _id: id }, req.body);
+
+  if (!result) {
+    throw createHttpError(404, 'Movie not exist');
+  }
+  res.json({
+    status: 200,
+    message: 'Movie updated successfully',
+    data: result.data,
+  });
+};
+
+//DELETE /:id
+
+export const deleteMovieController = async (req, res) => {
+  const { id } = req.params;
+
+  const result = await deleteMovie({ _id: id });
+
+  if (!result) {
+    throw createHttpError(404, 'Movie not exist');
+  }
+  res.json({
+    status: 200,
+    message: 'Movie delete successfully',
+    data: result,
+  });
 };
