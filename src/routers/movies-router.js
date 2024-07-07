@@ -34,7 +34,6 @@ moviesRouter.post('/', ctrWrapper(addMovieController));
 moviesRouter.put('/:id', isValidId, ctrWrapper(updateMovieController));
 
 //? ОНОВЛЕННЯ частково PATCH
-
 moviesRouter.patch('/:id', isValidId, ctrWrapper(patchMovieController));
 
 //? ВИДАЛЕННЯ DELETE

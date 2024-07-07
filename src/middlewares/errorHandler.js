@@ -25,7 +25,7 @@ const errorHandler = (error, req, res, next) => {
     return;
   }
 
-  //* якщо виникла якась невідома помилка
+  // якщо виникла якась невідома помилка
   res.status(500).json({
     status: 500,
     message: 'Something went wrong',

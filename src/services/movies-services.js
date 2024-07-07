@@ -1,5 +1,7 @@
 import Movie from '../db/models/Movie.js';
 
+//findOneAndDelete, find, findById --- методи mongoose
+
 //GET
 export const getMovies = () => Movie.find();
 
@@ -19,7 +21,8 @@ export const addMovie = (data) => Movie.create(data);
 
 export const upsertMovie = async (filter, data, options = {}) => {
   const result = await Movie.findOneAndUpdate(filter, data, {
-    new: true, //повернеться вже оновлений об'єкт в монгусі
+    // new: true, //повернеться вже оновлений об'єкт в монгусі
+    // runValidators: true, //роби валідацію під час оновлення
     includeResultMetadata: true, // перевіряє чи об'єкт був оновлений чи створений (з'являється LastErrorObject)
     //upserted -- значить сттворений // updatedExisting -- true  -- значить оновлений
     ...options, // додаткові налаштування які ще можуть передати (upsert), і щоб не втратити new:true ми їх розпиляємо
