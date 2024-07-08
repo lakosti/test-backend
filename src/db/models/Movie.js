@@ -10,6 +10,7 @@ import { mongooseSaveError, setUpdateSettings } from './hooks.js';
 // ТЕ ЩО МИ ЗБЕРІГАЄМО В БАЗІ (перевіряється під час додавання (Монгус схема))
 //під час оновлення mongoose не робить валідації
 
+//ВАЛІДАЦІЯ ТИХ ДАНИХ ЩО ДОБАВЛЯЄМО
 const movieSchema = new Schema(
   {
     //*описуємо назву та тип даних
@@ -17,7 +18,10 @@ const movieSchema = new Schema(
       type: String,
       required: [true, 'title is must'],
     },
-    director: String,
+    director: {
+      type: String,
+      required: [true, 'director is must'],
+    },
     // year: Schema.Types.BigInt //* якщо в js немає такого типа даних
     type: {
       type: String,
@@ -41,16 +45,12 @@ const movieSchema = new Schema(
 //*дослівно якщо після (post) збереження (save) сталася помилка, присвой їй статус 200 (щоб фронтенд розумів що проблема не з сервером (500), а коли неправильний об'єкт)
 
 // movieSchema.post('save', mongooseSaveError);
-movieSchema.post('save', (error, data, next) => {
-  console.log(error.status);
-  error.status = 400;
-  next();
-});
+movieSchema.post('save', mongooseSaveError);
 
 //перед оновленням ми повертаємо оновлений об'єкт у постмані і вмикаємо валідацію
-// movieSchema.pre('findOneAndUpdate', setUpdateSettings);
+movieSchema.pre('findOneAndUpdate', setUpdateSettings);
 
-// movieSchema.post('findOneAndUpdate', mongooseSaveError);
+movieSchema.post('findOneAndUpdate', mongooseSaveError);
 
 //? модель яка буде взаємодіяти з цією колекцією
 
