@@ -8,7 +8,6 @@ import {
   upsertMovie,
 } from '../services/movies-services.js';
 import createHttpError from 'http-errors';
-import { movieAddSchema } from '../validation/movie-schema.js';
 
 //GET
 export const getAllMoviesController = async (req, res) => {
@@ -60,28 +59,14 @@ export const getMovieByIdController = async (req, res) => {
 export const addMovieController = async (req, res) => {
   //*тіло запиту збергіється в req.body
   // console.log(req.body);
-  try {
-    await movieAddSchema.validateAsync(req.body, {
-      abortEarly: false, //щоб не зупинялась якщо знайшла помилку
 
-      // валідація через Joi - об'єкт в якому написано як прийшла перевірка
-      // якщо все добре приходить об'єкт value з нашим req.body
-      // якщо помилка - приходить наше value і об'єкт error
-      // коли joi знаходить ПЕРШУ помилку вона далі не перевіряє
-      // validateAsync - асинхронний запит який викидає помилку тому огортаємо в  try catch
-    });
+  const data = await addMovie(req.body);
 
-    //* звичайний запит
-    // const data = await addMovie(req.body);
-
-    // res.status(201).json({
-    //   status: 201,
-    //   data,
-    //   message: 'Success add movie',
-    // });
-  } catch (error) {
-    console.log(error);
-  }
+  res.status(201).json({
+    status: 201,
+    data,
+    message: 'Success add movie',
+  });
 };
 
 // PUT/:id

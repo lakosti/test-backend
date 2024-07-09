@@ -13,6 +13,13 @@ import ctrWrapper from '../utils/controllerWrapper.js';
 
 import isValidId from '../middlewares/isValidID.js';
 
+import {
+  movieAddSchema,
+  movieUpdateSchema,
+} from '../validation/movie-schema.js';
+
+import validateBody from '../utils/validateBody.js';
+
 const moviesRouter = express.Router();
 
 //? ОТРИМАТИ ВСІ ДАНІ GET
@@ -23,7 +30,13 @@ moviesRouter.get('/:id', isValidId, ctrWrapper(getMovieByIdController));
 
 //? ДОДАВАННЯ POST
 //додавання на головну одресу тому /
-moviesRouter.post('/', ctrWrapper(addMovieController));
+// validatebody - валідація Joi - перевіряє тіло запиту (те що нам прийшло)
+//спочатку іде перевірка joi - вона швидша а потім перевірка від mongoose - уже безпосередньо під час збереження в базу
+moviesRouter.post(
+  '/',
+  validateBody(movieAddSchema),
+  ctrWrapper(addMovieController),
+);
 
 //? ОНОВЛЕННЯ(ЗАМІНА) повністю PUT
 //в проєктах put запит може виконувати різні речі
@@ -31,10 +44,20 @@ moviesRouter.post('/', ctrWrapper(addMovieController));
 //-- в деяких проєктах put викор для часткового оновлення,
 //-- в деяких проєктах put може створювати об'єкт якщо такого немає, або викидати помилку 404 -- цей варіант зараз робимо
 
-moviesRouter.put('/:id', isValidId, ctrWrapper(updateMovieController));
+moviesRouter.put(
+  '/:id',
+  isValidId, // чи валідний id
+  validateBody(movieAddSchema), // тіло запиту
+  ctrWrapper(updateMovieController), //монгус
+);
 
 //? ОНОВЛЕННЯ частково PATCH
-moviesRouter.patch('/:id', isValidId, ctrWrapper(patchMovieController));
+moviesRouter.patch(
+  '/:id',
+  isValidId,
+  validateBody(movieUpdateSchema),
+  ctrWrapper(patchMovieController),
+);
 
 //? ВИДАЛЕННЯ DELETE
 moviesRouter.delete('/:id', isValidId, ctrWrapper(deleteMovieController));

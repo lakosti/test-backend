@@ -16,11 +16,11 @@ const errorHandler = (error, req, res, next) => {
 
   if (error instanceof HttpError) {
     // якщо це наша помилка (нами створена) то ми беремо звідти status і message і передаємо на фронт
-    const { status, message } = error;
+    const { status, message, errors } = error;
     res.status(status).json({
       status,
       message,
-      data: error,
+      data: errors || error, // якщо є errors передаємо їх - немає - error
     });
     return;
   }

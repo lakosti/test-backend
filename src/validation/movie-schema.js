@@ -11,3 +11,11 @@ export const movieAddSchema = Joi.object({
 
 //pattern -- регулярний вираз
 //valid(...) -- перелік чогось
+
+//при частковому оновленні прибираємо всі обов'язкові поля
+export const movieUpdateSchema = Joi.object({
+  title: Joi.string(),
+  releaseYear: Joi.string().pattern(releaseYearRegexp),
+  director: Joi.string(),
+  type: Joi.string().valid(...typeList),
+});

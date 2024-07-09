@@ -1,10 +1,16 @@
 import createHttpError from 'http-errors';
 
+// валідація через Joi - об'єкт в якому написано як прийшла перевірка
+// якщо все добре приходить об'єкт value з нашим req.body
+// якщо помилка - приходить наше value і об'єкт error
+// коли joi знаходить ПЕРШУ помилку вона далі не перевіряє
+// validateAsync - асинхронний запит який викидає помилку тому огортаємо в  try catch
+
 const validateBody = (schema) => {
   const func = async (req, res, next) => {
     try {
       await schema.validate(req.body, {
-        abortEarly: false,
+        abortEarly: false, //щоб не зупинялась якщо знайшла помилку
       });
       next();
     } catch (error) {
