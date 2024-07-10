@@ -3,7 +3,9 @@ import { releaseYearRegexp, typeList } from '../constans/movies-constants.js';
 
 //JOI - ВАЛІДАЦІЯ ТИХ ДАНИХ ЩО ПРИЙШЛИ при додаванні фільму (ПРИКЛАД ТОГО ЯК МАЄ ВИГЛЯДАТИ ЦЕЙ ОБ'ЄКТ)
 export const movieAddSchema = Joi.object({
-  title: Joi.string().required(),
+  title: Joi.string().required().messages({
+    'any.required': 'title must be',
+  }),
   releaseYear: Joi.string().required().pattern(releaseYearRegexp),
   director: Joi.string().required(),
   type: Joi.string().valid(...typeList),
