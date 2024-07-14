@@ -31,6 +31,7 @@ const startServer = () => {
   //? будь який запит який іде на /api/movies потрібно шукати в moviesRouter
   // приставка api вказує на те шо повертаються якісь дані а не просто розмітка
   app.use('/api/movies', moviesRouter);
+  //параметри запиту пишемо після ?page=5&perPage=10
 
   //? якщо нічого не знайдено, помилка 404
   app.use(notFoundHandler);

@@ -1,4 +1,6 @@
 //* контролер - це запит до бази і відповідь з неї, яку ми передаємо на фронтенд -- ТЕ ЩО ВІДПРАВЛЯЄМО НА ФРОНТ
+//? req.params -- те що іде після /: у маршруті (змінна по типу id)
+//? req.query -- те шо ми пишемо в параметри запиту після ? повертається нам у вигляді об'єкта (тип даних строка - його необхідно перевести в число + зробити перевірку на більше 0 і на число)
 
 import {
   addMovie,
@@ -8,12 +10,18 @@ import {
   upsertMovie,
 } from '../services/movies-services.js';
 import createHttpError from 'http-errors';
+import parsePaginationParams from '../utils/parsePaginationParams.js';
 
 //GET
 export const getAllMoviesController = async (req, res) => {
   //у mongoose метод find який знаходить все(якщо нічого не вказано) або щось одне
 
-  const data = await getMovies(); //! запит до бази
+  const { page, perPage } = parsePaginationParams(req.query);
+
+  const data = await getMovies({
+    page,
+    perPage,
+  }); //! запит до бази
 
   res.json({
     status: 200,

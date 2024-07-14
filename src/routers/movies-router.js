@@ -21,6 +21,7 @@ import {
 import validateBody from '../utils/validateBody.js';
 
 const moviesRouter = express.Router();
+//параметри запиту пишемо після ?page=5&perPage=10
 
 //? ОТРИМАТИ ВСІ ДАНІ GET
 moviesRouter.get('/', ctrWrapper(getAllMoviesController));

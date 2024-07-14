@@ -1,9 +1,38 @@
 import Movie from '../db/models/Movie.js';
+import calcPages from '../utils/calcPages.js';
 
 //findOneAndDelete, find, findById --- методи mongoose
 
-//GET
-export const getMovies = () => Movie.find();
+// GET
+// export const getMovies = () => Movie.find(); //повертає всі фільми
+
+// ПАГІНАЦІЯ
+export const getMovies = async ({ page = 1, perPage: limit }) => {
+  const skip = (page - 1) * limit;
+
+  //*повертаємо за пагінацією
+  const items = await Movie.find().skip(skip).limit(limit); //повертає фільми за пагінацією
+  //skip = page -- скільки об'єктів(фільмів) на початку пропустити
+  //limit = perPage-- скільки всього об'єктів відображать(повернути)
+  //*повертаємо кількість всіх об'єктів
+  const totalItems = await Movie.countDocuments(); // ПОВЕРТАЄ кількість всіх фільмів
+
+  const { totalPages, hasNextPage, hasPrevPage } = calcPages({
+    total: totalItems,
+    limit,
+    page,
+  });
+
+  return {
+    totalItems,
+    items,
+    page,
+    limit, // = perPage
+    totalPages,
+    hasNextPage,
+    hasPrevPage,
+  };
+};
 
 //GET
 export const getMovieById = (id) => Movie.findById(id); //?повертає фільм або null
