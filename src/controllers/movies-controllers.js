@@ -11,6 +11,7 @@ import {
 } from '../services/movies-services.js';
 import createHttpError from 'http-errors';
 import parsePaginationParams from '../utils/parsePaginationParams.js';
+import parseSortParams from '../utils/parseSortParams.js';
 
 //GET
 export const getAllMoviesController = async (req, res) => {
@@ -18,10 +19,13 @@ export const getAllMoviesController = async (req, res) => {
 
   const { page, perPage } = parsePaginationParams(req.query);
 
+  //параметри сортування також містяться в req.query
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+
   const data = await getMovies({
     page,
     perPage,
-  }); //! запит до бази
+  }); //! передаємо в запиті сторінку і кількість на сторінці
 
   res.json({
     status: 200,

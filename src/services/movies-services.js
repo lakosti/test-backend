@@ -3,20 +3,28 @@ import calcPages from '../utils/calcPages.js';
 
 //findOneAndDelete, find, findById --- методи mongoose
 
-// GET
+//? GET
 // export const getMovies = () => Movie.find(); //повертає всі фільми
 
-// ПАГІНАЦІЯ
+//? СОРТУВАННЯ
+// sortBy(за чим) sortOrder(сортування за спаданням / зростанням))
+// по зменшенню -- descending (DESC)
+// по зростанню -- ascending (ASC)
+
+//? ПАГІНАЦІЯ http://localhost:3000/api/movies?page=1&perPage=2
+
 export const getMovies = async ({ page = 1, perPage: limit }) => {
   const skip = (page - 1) * limit;
 
   //*повертаємо за пагінацією
   const items = await Movie.find().skip(skip).limit(limit); //повертає фільми за пагінацією
+
   //skip = page -- скільки об'єктів(фільмів) на початку пропустити
   //limit = perPage-- скільки всього об'єктів відображать(повернути)
   //*повертаємо кількість всіх об'єктів
   const totalItems = await Movie.countDocuments(); // ПОВЕРТАЄ кількість всіх фільмів
 
+  //витягуємо кількість сторінок, наступну і попередню
   const { totalPages, hasNextPage, hasPrevPage } = calcPages({
     total: totalItems,
     limit,
@@ -34,13 +42,13 @@ export const getMovies = async ({ page = 1, perPage: limit }) => {
   };
 };
 
-//GET
+//? GET
 export const getMovieById = (id) => Movie.findById(id); //?повертає фільм або null
 
-//POST
+//? POST
 export const addMovie = (data) => Movie.create(data);
 
-//PATCH/PUT
+//? PATCH/PUT
 
 // filter - який об'єкт оновлювати (по id)
 // data -- дані для оновлення
