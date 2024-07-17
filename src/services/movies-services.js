@@ -13,14 +13,24 @@ import calcPages from '../utils/calcPages.js';
 
 //? ПАГІНАЦІЯ http://localhost:3000/api/movies?page=1&perPage=2
 
-export const getMovies = async ({ page = 1, perPage: limit }) => {
+export const getMovies = async ({
+  page = 1,
+  perPage: limit,
+  sortBy,
+  sortOrder,
+}) => {
   const skip = (page - 1) * limit;
 
-  //*повертаємо за пагінацією
-  const items = await Movie.find().skip(skip).limit(limit); //повертає фільми за пагінацією
+  //*повертаємо за пагінацією +сортування (методи монгусу)
+  const items = await Movie.find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder });
+  // [sortBy] -- властивість що вираховується тому в дужках
 
   //skip = page -- скільки об'єктів(фільмів) на початку пропустити
   //limit = perPage-- скільки всього об'єктів відображать(повернути)
+
   //*повертаємо кількість всіх об'єктів
   const totalItems = await Movie.countDocuments(); // ПОВЕРТАЄ кількість всіх фільмів
 

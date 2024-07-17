@@ -12,6 +12,7 @@ import {
 import createHttpError from 'http-errors';
 import parsePaginationParams from '../utils/parsePaginationParams.js';
 import parseSortParams from '../utils/parseSortParams.js';
+import { fieldList } from '../constans/sortConstans.js';
 
 //GET
 export const getAllMoviesController = async (req, res) => {
@@ -20,18 +21,21 @@ export const getAllMoviesController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
 
   //параметри сортування також містяться в req.query
-  const { sortBy, sortOrder } = parseSortParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query, fieldList);
 
   const data = await getMovies({
     page,
     perPage,
-  }); //! передаємо в запиті сторінку і кількість на сторінці
+    sortBy,
+    sortOrder,
+  }); //! передаємо в запиті сторінку і кількість на сторінці +параметри сортування
 
   res.json({
     status: 200,
     data,
     message: 'Success found movies',
   }); //! відправляємо відповідь на фронтенд
+
   // } catch (error) {
   //   next(error); //? якщо у функцію некст передаємо об'єкт помилок то він шукає обродник помилок (midleware де є 4 параметри)
   //   // res.status(500).json({
