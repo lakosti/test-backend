@@ -13,22 +13,29 @@ import createHttpError from 'http-errors';
 import parsePaginationParams from '../utils/parsePaginationParams.js';
 import parseSortParams from '../utils/parseSortParams.js';
 import { fieldList } from '../constans/sortConstans.js';
+import parseMovieFilterParams from '../utils/parseMovieFilterParams.js';
 
 //GET
 export const getAllMoviesController = async (req, res) => {
   //у mongoose метод find який знаходить все(якщо нічого не вказано) або щось одне
 
+  //? ПАГІНАЦІЯ
   const { page, perPage } = parsePaginationParams(req.query);
 
+  //? СОРТУВАННЯ
   //параметри сортування також містяться в req.query
   const { sortBy, sortOrder } = parseSortParams(req.query, fieldList);
+
+  //? ФІЛЬТРАЦІЯ
+  const filter = parseMovieFilterParams(req.query);
 
   const data = await getMovies({
     page,
     perPage,
     sortBy,
     sortOrder,
-  }); //! передаємо в запиті сторінку і кількість на сторінці +параметри сортування
+    filter,
+  }); //! передаємо в запиті сторінку і кількість на сторінці + параметри сортування
 
   res.json({
     status: 200,

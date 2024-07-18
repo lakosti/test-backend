@@ -12,6 +12,7 @@ export const movieAddSchema = Joi.object({
   }),
   releaseYear: Joi.string().required().pattern(releaseYearRegexp),
   director: Joi.string().required(),
+  favourite: Joi.boolean(),
   type: Joi.string().valid(...typeList),
 });
 
@@ -23,5 +24,6 @@ export const movieUpdateSchema = Joi.object({
   title: Joi.string(),
   releaseYear: Joi.string().pattern(releaseYearRegexp),
   director: Joi.string(),
+  favourite: Joi.boolean(),
   type: Joi.string().valid(...typeList),
 });

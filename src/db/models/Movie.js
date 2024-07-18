@@ -28,6 +28,10 @@ const movieSchema = new Schema(
       enum: typeList, //* перелік основних видів, де один співпадає (або фільм або серіал)
       default: 'film',
     },
+    favourite: {
+      type: Boolean,
+      default: false,
+    },
     releaseYear: {
       type: String,
       match: releaseYearRegexp, //*регулярний вираз для року
