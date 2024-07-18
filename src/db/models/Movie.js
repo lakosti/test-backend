@@ -28,7 +28,7 @@ const movieSchema = new Schema(
       enum: typeList, //* перелік основних видів, де один співпадає (або фільм або серіал)
       default: 'film',
     },
-    favourite: {
+    fav: {
       type: Boolean,
       default: false,
     },

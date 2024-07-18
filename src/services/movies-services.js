@@ -22,20 +22,19 @@ export const getMovies = async ({
 }) => {
   const skip = (page - 1) * limit;
 
-  const request = Movie.find();
+  const databaseQuery = Movie.find();
   if (filter.type) {
-    request.where('type').equals(filter.type);
+    databaseQuery.where('type').equals(filter.type);
   }
-  if (filter.favourite) {
-    request.where('favourite').equals(filter.favourite); // фільтрація - де (where) filter == (equals)
+  if (filter.fav) {
+    databaseQuery.where('fav').equals(filter.fav); // фільтрація - де (where) filter == (equals)
   }
 
   //*повертаємо за пагінацією +сортування (методи монгусу)
-  const items = await request
+  const items = await databaseQuery
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder })
-    .exec();
+    .sort({ [sortBy]: sortOrder });
 
   // [sortBy] -- властивість що вираховується тому в дужках
 
@@ -43,7 +42,7 @@ export const getMovies = async ({
   //limit = perPage-- скільки всього об'єктів відображать(повернути)
 
   //*повертаємо кількість всіх об'єктів
-  const totalItems = await Movie.find().merge(request).countDocuments(); // ПОВЕРТАЄ кількість всіх фільмів
+  const totalItems = await Movie.find().merge(databaseQuery).countDocuments(); // ПОВЕРТАЄ кількість всіх фільмів
 
   //витягуємо кількість сторінок, наступну і попередню
   const { totalPages, hasNextPage, hasPrevPage } = calcPages({
