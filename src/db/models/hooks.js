@@ -9,7 +9,14 @@
 //401 - НЕАВТОРИЗОВАНИЙ КОРИСТУВАЧ (ЦЕ НЕ ПОМИЛКА ВАЛІДАЦІЇ)
 
 export const mongooseSaveError = (error, data, next) => {
-  error.status = 400;
+  //ПОТРБІНО ЗРОБИТИ ТАК ЩОБ ЯКЩО ПОМИЛКА ВАЛІДАЦІї (НЕВІРНИЙ ЕМАІЛ, ПАРОЛЬ) - ЦЕ БУЛА 400 ПОМИЛКА, А ЯКЩО ЦЕ УНІКАЛЬНИЙ ЕЛЕМЕНТ - 409
+
+  // console.log(error.name); //MongoServerError
+  // console.log(error.code); //11000
+
+  const { name, code } = error;
+
+  error.status = name === 'MongoServerError' && code === 11000 ? 409 : 400;
   next();
 };
 
