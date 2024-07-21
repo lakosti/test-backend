@@ -26,7 +26,7 @@ export const getMovies = async ({
   if (filter.type) {
     databaseQuery.where('type').equals(filter.type);
   }
-  if (filter.fav) {
+  if (filter.fav !== undefined) {
     databaseQuery.where('fav').equals(filter.fav); // фільтрація - де (where) filter == (equals)
   }
 

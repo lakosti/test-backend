@@ -17,7 +17,7 @@ const parseMovieFitlerParams = ({ type, fav }) => {
 
   return {
     type: parsedType,
-    favorite: parsedFavorite,
+    fav: parsedFavorite,
   };
 };
 
