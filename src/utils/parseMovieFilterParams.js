@@ -9,6 +9,12 @@ const parseBoolean = (value) => {
   if (!isBoolean) return;
 
   return value === 'true' ? true : false;
+
+  // Богдан
+
+  // if (typeof value !== 'string') return;
+  // if (!['true', 'false'].includes(value)) return;
+  // return value === 'true';
 };
 
 const parseMovieFitlerParams = ({ type, fav }) => {

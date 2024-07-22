@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-
 import { mongooseSaveError, setUpdateSettings } from './hooks.js';
 import { emailRegexp } from '../../constans/users-constants.js';
 

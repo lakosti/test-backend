@@ -3,6 +3,7 @@
 import createHttpError from 'http-errors';
 import { findUser, signup } from '../services/auth-services.js';
 import { compareHash } from '../utils/hash.js';
+import { createSession } from '../services/session-services.js';
 
 export const signupController = async (req, res) => {
   //отримуємо дані користувача і зберігаємо в базі
@@ -71,12 +72,32 @@ export const signinController = async (req, res) => {
   //   message: 'User signin successfully',
   // });
 
-  const accessToken = '1254fv5855rr';
-  const refreshToken = '115154er4freferf';
+  //?CЕСІЯ - ЦЕ ПЕРІОДИ ЖИТТЯ  accessToken І refreshToken (під час сесії зберігаються дані про користувача)
+
+  // const accessToken = '1254fv5855rr'; //токен який прикріпляється до запиту (недовгий термін дії)
+  // const refreshToken = '115154er4freferf'; // оновлює дані
+
+  const { _id, accessToken, refreshToken, refreshTokenValidUt } =
+    await createSession(user._id); // бо у базі таке id ---- _id
+
+  //КУКИИ - COOKIES  дані які надходять з бекенда (додаткові налаштування)
+  res.cookie('refresh', refreshToken, {
+    httpOnly: true, //куки можна лише прочитати (фронт їх ніяк не змінить)
+    expires: refreshTokenValidUt, //коли закінчиться срок дії токену
+  }); // назва кука, значення, налаштування
+
+  //додаємо session id
+  res.cookie('sessionId', _id, {
+    httpOnly: true,
+    expires: refreshTokenValidUt,
+  });
 
   //надсилаємо відповідь (json/send) (RETURN)
   res.json({
-    accessToken,
-    refreshToken,
+    status: 200,
+    message: 'User signin successfully',
+    data: {
+      accessToken, //на фронт надсилаємо лише  access token, бо деякі програми(розширення) можуть зчитувати ці токени
+    },
   });
 };
