@@ -23,6 +23,10 @@ export const getMovies = async ({
   const skip = (page - 1) * limit;
 
   const databaseQuery = Movie.find();
+  //якщо фільтер має айді, то видавай відповідь по айді
+  if (filter.userId) {
+    databaseQuery.where('userId').equals(filter.userId);
+  }
   if (filter.type) {
     databaseQuery.where('type').equals(filter.type);
   }
@@ -63,10 +67,15 @@ export const getMovies = async ({
 };
 
 //? GET
-export const getMovieById = (id) => Movie.findById(id); //?повертає фільм або null
+export const getMovieById = (filter) => Movie.findById(filter); //?повертає фільм або null
 
 //? POST
-export const addMovie = (data) => Movie.create(data);
+export const addMovie = async (data) => Movie.create(data);
+// const newMovie = data.title;
+// const movieFromBD = await Movie.create(data);
+// if (newMovie === movieFromBD.title) {
+//   throw new Error('title the same');
+// }
 
 //? PATCH/PUT
 

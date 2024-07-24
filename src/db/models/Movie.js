@@ -38,6 +38,21 @@ const movieSchema = new Schema(
       required: true,
     },
     // тип фільму - це строка з назвою або фільм або серіал, по дефолту фільм
+    userId: {
+      type: Schema.Types.ObjectId, //щоб визначити хто додав фільм
+      ref: 'user',
+      required: true,
+    },
+    name: {
+      type: String, //щоб визначити хто додав фільм
+      ref: 'user',
+      required: true,
+    },
+    email: {
+      type: String, //щоб визначити хто додав фільм
+      ref: 'user',
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }, // timestamps -- дата додавання та дана оновлення
 );

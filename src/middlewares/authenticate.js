@@ -43,12 +43,14 @@ const authenticate = async (req, res, next) => {
   }
 
   //перевіряємо чи є такий користувач (може бути таке що людина залогінилась але її видалило з бази )
-  const user = await findUser(session.userId);
+  const user = await findUser({ _id: session.userId }); //!
   if (!user) {
     return next(createHttpError(401, 'User not found'));
   }
-  //! і якщо всі перевірки пройдені -- то ти можеш отримати свої фільми (next - іди далі)
+  // записуємо юзера в обєкт налаштувань (визначаємо хто додав фільми)
+  req.user = user;
 
+  //! і якщо всі перевірки пройдені -- то ти можеш отримати свої фільми (next - іди далі)
   next();
 };
 

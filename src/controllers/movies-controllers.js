@@ -18,6 +18,8 @@ import parseMovieFilterParams from '../utils/parseMovieFilterParams.js';
 //GET
 export const getAllMoviesController = async (req, res) => {
   //у mongoose метод find який знаходить все(якщо нічого не вказано) або щось одне
+  //? ПЕРСОНАЛІЗОВАНА КОЛЕКЦІЯ ФІЛЬМІВ
+  const { _id: userId } = req.user;
 
   //? ПАГІНАЦІЯ
   const { page, perPage } = parsePaginationParams(req.query);
@@ -27,7 +29,8 @@ export const getAllMoviesController = async (req, res) => {
   const { sortBy, sortOrder } = parseSortParams(req.query, fieldList);
 
   //? ФІЛЬТРАЦІЯ
-  const filter = parseMovieFilterParams(req.query);
+  //розпиляємо фільт щоб додати айді
+  const filter = { ...parseMovieFilterParams(req.query), userId };
 
   const data = await getMovies({
     page,
@@ -58,8 +61,11 @@ export const getMovieByIdController = async (req, res) => {
   // console.log(req.params); // {id: refreferferfre} - айді можемо витягнути так
   // якщо ми ввели неправильний айді то mongoose сам викидає помилку, тому огортаємо в try catch
 
+  //*персоналізована відповідь за айді користувачем
+  const { _id: userId } = req.user;
+
   const { id } = req.params;
-  const data = await getMovieById(id);
+  const data = await getMovieById({ _id: id, userId }); //айді = _id з бази, не userId
 
   // якщо нам повернувся null, тобто такого id немає,  створюємо помилку и викидаємо її, вона переходить у розділ catch де потім переходить  у errorHandler
   if (!data) {
@@ -80,10 +86,14 @@ export const getMovieByIdController = async (req, res) => {
 
 //POST
 export const addMovieController = async (req, res) => {
-  //*тіло запиту збергіється в req.body
+  // //*тіло запиту збергіється в req.body
   // console.log(req.body);
 
-  const data = await addMovie(req.body);
+  //? отримуємо інформацію про людину яка додала фільм
+  // console.log(req.user);
+  const { _id: userId, name, email } = req.user;
+
+  const data = await addMovie({ ...req.body, userId, name, email });
 
   res.status(201).json({
     status: 201,
@@ -97,7 +107,11 @@ export const addMovieController = async (req, res) => {
 export const updateMovieController = async (req, res) => {
   const { id } = req.params;
 
-  const data = await upsertMovie({ _id: id }, req.body, { upsert: true }); // upsert: true -- якщо немає такого об'єкту то додає
+  const { _id: userId } = req.user;
+
+  const data = await upsertMovie({ _id: id, userId }, req.body, {
+    upsert: true,
+  }); // upsert: true -- якщо немає такого об'єкту то додає
 
   const status = data.isNew ? 201 : 200;
   const message = data.isNew ? 'Success create movie' : 'Success update movie';
@@ -113,7 +127,8 @@ export const updateMovieController = async (req, res) => {
 
 export const patchMovieController = async (req, res) => {
   const { id } = req.params;
-  const result = await upsertMovie({ _id: id }, req.body);
+  const { _id: userId } = req.user;
+  const result = await upsertMovie({ _id: id, userId }, req.body);
 
   if (!result) {
     throw createHttpError(404, 'Movie not exist');
@@ -129,8 +144,9 @@ export const patchMovieController = async (req, res) => {
 
 export const deleteMovieController = async (req, res) => {
   const { id } = req.params;
-
-  const result = await deleteMovie({ _id: id });
+  //щоб людина не могла видалити чужий об'єкт
+  const { _id: userId } = req.user;
+  const result = await deleteMovie({ _id: id, userId });
 
   if (!result) {
     throw createHttpError(404, 'Movie not exist');
