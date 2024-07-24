@@ -7,8 +7,14 @@ import {
   ACCESS_TOKEN_LIFETIME,
 } from '../constans/users-constants.js';
 
+//ЗНАХОДИМО сесію
+export const findSession = (filter) => Session.findOne(filter);
+
 //створюємо сесію - це просто об'єкт який містить айді, і токени ( створення сессії - це запис її до колекції)
-export const createSession = (userId) => {
+export const createSession = async (userId) => {
+  //якщо є така сесія -- видаляємо
+  await Session.deleteOne({ userId });
+
   //генеруємо рандомну строку (токен) через crypto (повертає буфер)
   const accessToken = randomBytes(30).toString('base64');
   const refreshToken = randomBytes(30).toString('base64');
@@ -26,3 +32,5 @@ export const createSession = (userId) => {
     refreshTokenValidUt,
   });
 };
+
+export const deleteSession = (filter) => Session.deleteOne(filter);

@@ -20,8 +20,14 @@ import {
 
 import validateBody from '../utils/validateBody.js';
 
+//!перевірка приватного маршруту (чи людина залогінена)
+import authenticate from '../middlewares/authenticate.js';
+
 const moviesRouter = express.Router();
 //параметри запиту пишемо після ?page=5&perPage=10
+
+//вішаємо на всі роути приватну властивіть (мідлвару)
+moviesRouter.use(authenticate);
 
 //? ОТРИМАТИ ВСІ ДАНІ GET
 moviesRouter.get('/', ctrWrapper(getAllMoviesController));
