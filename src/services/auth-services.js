@@ -6,6 +6,8 @@ import { hashValue } from '../utils/hash.js';
 //перевірка чи такий користувач існує (щоб вивести текст помилки про унікальність)
 export const findUser = (filter) => User.findOne(filter);
 
+//оновлення користувача
+export const updateUser = (filter, data) => User.findOneAndUpdate(filter, data);
 //створюємо нового юзера + хешування паролю
 export const signup = async (data) => {
   const { password } = data;

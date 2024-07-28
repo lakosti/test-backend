@@ -12,6 +12,7 @@ import {
   refreshController,
   signinController,
   signupController,
+  verifyController,
 } from '../controllers/auth-controller.js';
 
 const authRouter = Router();
@@ -23,6 +24,8 @@ authRouter.post(
   ctrWrapper(signupController), //MONGOOSE VALIDATION
 );
 
+//перехід за посиланням це завжди гет запит
+authRouter.get('/verify', ctrWrapper(verifyController));
 //логін це також POST
 authRouter.post(
   '/signin',

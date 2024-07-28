@@ -1,14 +1,27 @@
 //ASYNC AWAIT - розпаковуємо проміс
 //АВТОМАТИЧНЕ ОНОВЛЕННЯ ACCESS TOKENA -- НА ФРОНТЕНДІ ЦЕ AXIOS.INTERCEPTORS
-
+import fs from 'node:fs/promises'; //читання файлів
+import handlebars from 'handlebars';
 import createHttpError from 'http-errors';
-import { findUser, signup } from '../services/auth-services.js';
+import { findUser, signup, updateUser } from '../services/auth-services.js';
 import { compareHash } from '../utils/hash.js';
 import {
   createSession,
   deleteSession,
   findSession,
 } from '../services/session-services.js';
+import env from '../utils/env.js';
+import jwt from 'jsonwebtoken';
+import sendEmail from '../utils/sendEmail.js';
+import path from 'node:path';
+import { TEMPLATES_DIR } from '../constans/movies-constants.js'; // шлях до папки
+import { verify } from 'node:crypto';
+
+const app_domain = env('APP_DOMAIN');
+const JWT_SECRET = env('JWT_SECRET');
+
+//шлях до самого файлу
+const htmlTemplatePath = path.join(TEMPLATES_DIR, 'verifyEmail.html'); //join дозволяє об'єднувати шляхи
 
 const setupResponseSession = (
   res,
@@ -44,6 +57,38 @@ export const signupController = async (req, res) => {
   //? запит до бази
   const newUser = await signup(req.body);
 
+  //дані які будуть записані в токені
+  const payload = {
+    id: newUser._id,
+    email, //email ми вже витягли
+  };
+
+  //створюємо токен
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' }); // expiresIn час життя
+
+  //читаємо наш html шаблон як строку, для цього передаємо абсолютний шлях + кодування
+  const html = await fs.readFile(htmlTemplatePath, 'utf-8');
+
+  //перетворюємо html за допомогою шаблонізатора на шаблон
+  const htmlTemplate = handlebars.compile(html);
+
+  //формуємо html шаблон листа
+  const htmlHandler = htmlTemplate({
+    project_name: 'My movies',
+    app_domain,
+    token,
+  });
+
+  //відправляємо імейл для верефікації
+  const verifyEmail = {
+    subject: 'Verify email', //тема
+    to: email, //кому
+    html: htmlHandler, // те що буде в email (використовуємо шаблонізатор html)
+  };
+
+  //відправляємо email для  верефікації
+  await sendEmail(verifyEmail);
+
   const data = {
     name: newUser.name,
     email: newUser.email,
@@ -64,18 +109,48 @@ export const signupController = async (req, res) => {
   });
 };
 
+export const verifyController = async (req, res) => {
+  //токен беремо з рядка запиту - req.query
+  const { token } = req.query;
+
+  //перевірка токену на валідність
+  try {
+    //payload те що ми передаємо - id / email
+    const { id, email } = jwt.verify(token, JWT_SECRET);
+
+    //дивимось чи я в базі людина у якої така почта та id, якщо є надсилаємо лист верефікації
+    const user = await findUser({ _id: id, email });
+
+    if (!user) {
+      throw createHttpError(404, 'User not found');
+    }
+    //якщо знайшли такого юзера по email - то оновлюємо (data = поле verify = true)
+    await updateUser({ email }, { verify: true });
+
+    res.json({
+      status: 200,
+      message: 'Email verified successfully',
+    });
+  } catch (error) {
+    throw createHttpError(401, error.message);
+  }
+};
+
 export const signinController = async (req, res) => {
-  const { email, password } = req.body; //? те шо пише юзер в тілі запиту (свої дані)
+  const { email, password } = req.body; // те шо пише юзер в тілі запиту (свої дані)
 
   //перевіряємо чи є такий імейл уже
-  const user = await findUser({ email }); //? те що вже є в базі
+  const user = await findUser({ email }); // те що вже є в базі (деструк з user.email)
 
   //якщо немає з таким імейлом
   if (!user) {
     throw createHttpError(404, 'Email not found');
     //throw createHttpError(401, 'Email or password invalid')// ДЛЯ БЕЗПЕКИ
   }
-
+  //перевіряємо чи такий імейл верефікований user.verify === 'false
+  if (!user.verify) {
+    throw createHttpError(401, 'Email not verify');
+  }
   //якщо є такий користувач - порівнюємо пароль (bcrypt - асинхронний тому await (РОЗПАКОВУЄМО ПРОМІС))
   const comparePassword = await compareHash(password, user.password);
   //якщо паролі не співпадають

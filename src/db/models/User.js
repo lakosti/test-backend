@@ -18,6 +18,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    verify: {
+      type: Boolean,
+      required: true, //коли людина реєсттрується емайл ще не підтверджений
+      default: false,
+    },
   },
   { versionKey: false, timestamps: true },
 );
